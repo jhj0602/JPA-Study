@@ -34,7 +34,7 @@ public class BoardController {
     }
 
     @PostMapping("/validtest")
-    public ResponseEntity<Void> validTest(@RequestBody @Valid ValidErrorTestDto validErrorTestDto){
+    public ResponseEntity<Void> validTest(@RequestBody @Valid ValidErrorTestDto validErrorTestDto) {
         log.info(validErrorTestDto.toString());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
