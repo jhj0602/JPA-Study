@@ -23,7 +23,7 @@ public class BoardTest {
         Board board1 = boardRepository.save(board);
         String str =  "영속성 알고쓰자 Update";
         Board boardUpdate = boardRepository.findById(board1.getId()).orElseThrow(()->new IllegalArgumentException("없움"));
-        boardUpdate.setContent(str);
+//        boardUpdate.setContent(str);
         Board boardUpdate2 = boardRepository.findById(board1.getId()).orElseThrow(()->new IllegalArgumentException("없움"));
         Assertions.assertThat(boardUpdate.getContent()).isEqualTo(boardUpdate2.getContent());
     }
