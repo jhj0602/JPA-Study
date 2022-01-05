@@ -1,10 +1,8 @@
 package com.ssafy.study.board.controller;
 
-import com.ssafy.study.board.common.response.CommonResponseDto;
 import com.ssafy.study.board.dto.ValidErrorTestDto;
-import com.ssafy.study.board.enitity.Board;
-import com.ssafy.study.board.enitity.BoardRepository;
-import com.ssafy.study.board.exception.NotBoardException;
+import com.ssafy.study.board.service.BoardService;
+import com.ssafy.study.common.response.CommonResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,19 +16,17 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/board")
 public class BoardController {
-    private final BoardRepository boardRepository;
+    private final BoardService boardService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponseDto> boardFindById(@PathVariable("id") Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(NotBoardException::new);
-        return new ResponseEntity<>(new CommonResponseDto(board),HttpStatus.OK);
+    public ResponseEntity<CommonResponseDto> findById(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(new CommonResponseDto(boardService.findById(id)), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponseDto> boardFindAll() {
+    public ResponseEntity<CommonResponseDto> findAll() {
         return new ResponseEntity<>(
-                new CommonResponseDto(boardRepository.findAll()), HttpStatus.OK
-        );
+                new CommonResponseDto(boardService.findAll()), HttpStatus.OK);
     }
 
     @PostMapping("/validtest")
