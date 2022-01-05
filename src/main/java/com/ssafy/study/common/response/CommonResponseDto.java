@@ -1,4 +1,4 @@
-package com.ssafy.study.board.common.response;
+package com.ssafy.study.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
