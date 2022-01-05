@@ -1,4 +1,4 @@
-package com.ssafy.study.board.common.error;
+package com.ssafy.study.common.error;
 
 import lombok.Getter;
 
