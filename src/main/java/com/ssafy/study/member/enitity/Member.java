@@ -20,7 +20,7 @@ public class Member {
 
     private String userName;
 
-    @OneToMany(fetch = FetchType.LAZY)//fetch join N+1문제 해결 방법 //단방향 양방향 맵핑
+    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)//fetch join N+1문제 해결 방법 //단방향 양방향 맵핑
     private List<Board> boards = new ArrayList<>();
 
     @Builder
