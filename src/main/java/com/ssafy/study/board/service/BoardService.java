@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor //DI
 @Transactional(readOnly = true)
 public class BoardService {
+
+
 
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
@@ -27,8 +29,12 @@ public class BoardService {
     }
 
     public BoardResponseDto findById(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(NotBoardException::new);
+          Board board = boardRepository.findById(id).orElseThrow(NotBoardException::new);
         return BoardResponseDto.from(board);
     }
 
+    public List<BoardResponseDto> findByMemberId(Long userId) {
+        List<Board> boards = boardRepository.findByMemberId(userId);
+        return boards.stream().map(BoardResponseDto::from).collect(Collectors.toList());
+    }
 }

@@ -16,4 +16,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @EntityGraph(attributePaths = "member")
     Optional<Board> findById(Long id);
+
+    @EntityGraph(attributePaths = "member")
+    List<Board> findByMemberId(Long id);
 }
