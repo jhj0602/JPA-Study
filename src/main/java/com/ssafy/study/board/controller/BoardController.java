@@ -16,6 +16,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/board")
 public class BoardController {
+    
     private final BoardService boardService;
 
     @GetMapping("/{id}")
@@ -29,9 +30,16 @@ public class BoardController {
                 new CommonResponseDto(boardService.findAll()), HttpStatus.OK);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<CommonResponseDto> findByUserId(@PathVariable("userId") Long userId) {
+        return new ResponseEntity<>(
+                new CommonResponseDto(boardService.findByMemberId(userId)), HttpStatus.OK);
+    }
+
+
     @PostMapping("/validtest")
     public ResponseEntity<Void> validTest(@RequestBody @Valid ValidErrorTestDto validErrorTestDto) {
         log.info(validErrorTestDto.toString());
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
