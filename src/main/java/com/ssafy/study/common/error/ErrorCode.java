@@ -13,7 +13,9 @@ public enum ErrorCode {
     EMAIL_TOO_LONG(400, "Email too long."),
     REQUEST_FAIL_TO_OTHER_SERVER(400, "Request fail to other server."),
     BOARD_NOT_FOUNT(404, "Board not found."),
-    USER_NOT_FOUND(404, "User not found.");
+    USER_NOT_FOUND(404, "User not found."),
+    EMAIL_NOT_CODE(404,"유효 기간 만료이거나 코드를 잘못 입력하셨습니다."),
+    EMAIL_SEND_ERROR(500, "Email Send Error");
 
     private final int status;
     private final String message;
