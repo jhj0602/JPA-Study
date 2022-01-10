@@ -1,73 +1,84 @@
 package com.ssafy.study.email;
 
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
+import com.ssafy.study.email.config.RedisUtil;
+import com.ssafy.study.email.exception.EmailCodeException;
+import com.ssafy.study.email.exception.EmailSendException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender emailSender;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    public static final String ePw = createKey();
+    private final RedisUtil redisUtil;
 
-    private MimeMessage createMessage(String to)throws Exception{
-        logger.info("보내는 대상 : "+ to);
-        logger.info("인증 번호 : " + ePw);
-        MimeMessage  message = emailSender.createMimeMessage();
+    public void sendEmailMessage(String email) {
+        try {
+            String code = createCode();
+            redisUtil.setDataExpire(code, email, 60 * 5L);
+            MimeMessage message = createMessage(email, code);
+            emailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new EmailSendException();
+        }
+    }
 
-        String code = createCode(ePw);
-        message.addRecipients(RecipientType.TO, to); //보내는 대상
-        message.setSubject("Slack 확인 코드: " + code); //제목
-
-        String msg="";
-        msg += "<img width=\"120\" height=\"36\" style=\"margin-top: 0; margin-right: 0; margin-bottom: 32px; margin-left: 0px; padding-right: 30px; padding-left: 30px;\" src=\"https://slack.com/x-a1607371436052/img/slack_logo_240.png\" alt=\"\" loading=\"lazy\">";
-        msg += "<h1 style=\"font-size: 30px; padding-right: 30px; padding-left: 30px;\">이메일 주소 확인</h1>";
-        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">아래 확인 코드를 Slack 가입 창이 있는 브라우저 창에 입력하세요.</p>";
-        msg += "<div style=\"padding-right: 30px; padding-left: 30px; margin: 32px 0 40px;\"><table style=\"border-collapse: collapse; border: 0; background-color: #F4F4F4; height: 70px; table-layout: fixed; word-wrap: break-word; border-radius: 6px;\"><tbody><tr><td style=\"text-align: center; vertical-align: middle; font-size: 30px;\">";
-        msg += code;
-        msg += "</td></tr></tbody></table></div>";
-        msg += "<a href=\"https://slack.com\" style=\"text-decoration: none; color: #434245;\" rel=\"noreferrer noopener\" target=\"_blank\">Slack Clone Technologies, Inc</a>";
-
+    private MimeMessage createMessage(String toEmail, String code) throws Exception {
+        MimeMessage message = emailSender.createMimeMessage();
+        message.addRecipients(RecipientType.TO, toEmail); //보내는 대상
+        message.setSubject("ssafe 확인 코드: " + code); //제목
+        String msg = "";
+        msg += "<h1 style=\"font-size: 30px; padding-right: 30px; padding-left: 30px;\">Ssafe 회원 가입을 위한 본인 확인 메일 입니다.</h1>";
+        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">본인 확인을 위하여 아래의 ID 및 인증 번호를 확인하신 후, 회원 가입 창에 입력하여 주시기바랍니다.</p>";
+        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">인증 번호 : " + code + "</p>";
+        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">감사합니다.";
         message.setText(msg, "utf-8", "html"); //내용
-        message.setFrom(new InternetAddress("보내는 계정","slack-clone")); //보내는 사람
-
+        message.setFrom(new InternetAddress("ssafe@ssafe.com", "ssafe 관리자")); //보내는 사람
         return message;
     }
 
+
     // 인증코드 만들기
-    public static String createKey() {
-        StringBuffer key = new StringBuffer();
+    private String createCode() {
+        StringBuilder code = new StringBuilder();
         Random rnd = new Random();
-
-        for (int i = 0; i < 6; i++) { // 인증코드 6자리
-            key.append((rnd.nextInt(10)));
+        for (int i = 0; i < 7; i++) {
+            int rIndex = rnd.nextInt(3);
+            switch (rIndex) {
+                case 0:
+                    code.append((char) (rnd.nextInt(26) + 97));
+                    break;
+                case 1:
+                    code.append((char) (rnd.nextInt(26) + 65));
+                    break;
+                case 2:
+                    code.append((rnd.nextInt(10)));
+                    break;
+            }
         }
-        return key.toString();
+        return code.toString();
     }
 
-    public void sendSimpleMessage(String to)throws Exception {
-        MimeMessage message = createMessage(to);
-        try{//예외처리
-            emailSender.send(message);
-        }catch(MailException es){
-            es.printStackTrace();
-            throw new IllegalArgumentException();
+    public boolean getUserIdByCode(String code) {
+        String email = redisUtil.getData(code); // 입력 받은 인증 코드(key)를 이용해 email(value)을 꺼낸다.
+        if (email == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
+            throw new EmailCodeException();
         }
+        return true;
     }
 
-    public String createCode(String ePw){
-        return ePw.substring(0, 3) + "-" + ePw.substring(3, 6);
-    }
 }
