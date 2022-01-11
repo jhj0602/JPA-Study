@@ -1,9 +1,17 @@
 package com.ssafy.study.board.enitity;
 
+import com.ssafy.study.comment.Comment;
 import com.ssafy.study.member.enitity.Member;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -21,6 +29,9 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)//fetch join N+1문제 해결 방법
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<Comment>  comments = new LinkedHashSet<>();
 
     @Builder
     public Board(String content, Member member) {

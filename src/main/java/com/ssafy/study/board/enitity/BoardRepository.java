@@ -2,6 +2,8 @@ package com.ssafy.study.board.enitity;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,9 +16,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @EntityGraph(attributePaths = "member")
     List<Board> findAll();
 
-    @EntityGraph(attributePaths = "member")
     Optional<Board> findById(Long id);
 
     @EntityGraph(attributePaths = "member")
     List<Board> findByMemberId(Long id);
+
 }

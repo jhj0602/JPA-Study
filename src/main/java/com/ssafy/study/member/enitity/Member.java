@@ -1,11 +1,11 @@
 package com.ssafy.study.member.enitity;
 
+import com.ssafy.study.comment.Comment;
 import com.ssafy.study.board.enitity.Board;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -20,8 +20,11 @@ public class Member {
 
     private String userName;
 
-    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)//fetch join N+1문제 해결 방법 //단방향 양방향 맵핑
-    private List<Board> boards = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY)//fetch join N+1문제 해결 방법 //단방향 양방향 맵핑
+    private Set<Board> boards =  new LinkedHashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<Comment> comments =   new LinkedHashSet<>();
 
     @Builder
     public Member(String userName) {

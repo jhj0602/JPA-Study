@@ -24,17 +24,17 @@ public class BoardController {
         return new ResponseEntity<>(new CommonResponseDto(boardService.findById(id)), HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<CommonResponseDto> findAll() {
-        return new ResponseEntity<>(
-                new CommonResponseDto(boardService.findAll()), HttpStatus.OK);
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<CommonResponseDto> findByUserId(@PathVariable("userId") Long userId) {
-        return new ResponseEntity<>(
-                new CommonResponseDto(boardService.findByMemberId(userId)), HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<CommonResponseDto> findAll() {
+//        return new ResponseEntity<>(
+//                new CommonResponseDto(boardService.findAll()), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<CommonResponseDto> findByUserId(@PathVariable("userId") Long userId) {
+//        return new ResponseEntity<>(
+//                new CommonResponseDto(boardService.findByMemberId(userId)), HttpStatus.OK);
+//    }
 
 
     @PostMapping("/validtest")
