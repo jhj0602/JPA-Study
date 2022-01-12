@@ -10,6 +10,9 @@ import com.ssafy.study.comment.CommentResponseDto;
 import com.ssafy.study.member.enitity.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,40 +25,34 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BoardService {
 
-
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
 
 
-    //    public List<BoardResponseDto> findAll() {
-//        List<Board> boards = boardRepository.findAll();
-//        return boards.stream().map(BoardResponseDto::from).collect(Collectors.toList());
-//    }
-    @Transactional(readOnly = true)
-    public BoardResponseDto findById(Long boardId) {
+    public List<BoardResponseDto> findAll(int limit) {
+        Page<Board> boards = boardRepository.findAll(PageRequest.of(limit - 1, 3, Sort.by(Sort.Direction.DESC, "id")));
+        return boards.stream().map(board -> {
+            Integer totalComment = commentRepository.countByBoardId(board.getId());
+            return new BoardResponseDto(board, totalComment);
+        }).collect(Collectors.toList());
+    }
 
+
+    public BoardResponseDto findById(Long boardId) {
         List<Comment> findComments = commentRepository.findByJoinBoardId(boardId);
         List<CommentResponseDto> comments = findComments.stream()
                 .map(comment -> new CommentResponseDto(comment))
                 .collect(Collectors.toList());
-        log.info(comments.size() + ": size");
         Board board = boardRepository.findById(boardId).orElseThrow(NotBoardException::new);
-        log.info(comments.size() + ": size");
-        return BoardResponseDto.from(board, comments);
+        return new BoardResponseDto(board, comments);
     }
 
-
-//    @Transactional(readOnly = true)
-//    public BoardResponseDto findById(Long boardId) {
-//        log.info(boardId+" ");
-//        Board board = boardRepository.findById(boardId).orElseThrow(NotBoardException::new);
-//        log.info(board.getComments().size()+" ");
-//        return BoardResponseDto.from(board);
-//    }
-
-//    public List<BoardResponseDto> findByMemberId(Long userId) {
-//        List<Board> boards = boardRepository.findByMemberId(userId);
-//        return boards.stream().map(BoardResponseDto::from).collect(Collectors.toList());
-//    }
+    public List<BoardResponseDto> findByMemberId(Long userId) {
+        List<Board> boards = boardRepository.findByMemberId(userId);
+        return boards.stream().map(board -> {
+            Integer totalComment = commentRepository.countByBoardId(board.getId());
+            return new BoardResponseDto(board, totalComment);
+        }).collect(Collectors.toList());
+    }
 }
