@@ -11,30 +11,36 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static com.ssafy.study.common.message.SuccessMessage.*;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/board")
+@RequestMapping("/boards")
 public class BoardController {
-    
+
     private final BoardService boardService;
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponseDto> findById(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(new CommonResponseDto(boardService.findById(id)), HttpStatus.OK);
+        return ResponseEntity.ok().body(CommonResponseDto.of(
+                HttpStatus.OK, SUCCESS_GET_BOARD, boardService.findById(id))
+        );
     }
 
-//    @GetMapping
-//    public ResponseEntity<CommonResponseDto> findAll() {
-//        return new ResponseEntity<>(
-//                new CommonResponseDto(boardService.findAll()), HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<CommonResponseDto> findByUserId(@PathVariable("userId") Long userId) {
-//        return new ResponseEntity<>(
-//                new CommonResponseDto(boardService.findByMemberId(userId)), HttpStatus.OK);
-//    }
+    @GetMapping
+    public ResponseEntity<CommonResponseDto> findAll(@RequestParam(value = "limit", defaultValue = "1") int limit) {
+        return ResponseEntity.ok().body(CommonResponseDto.of(
+                HttpStatus.OK, SUCCESS_GET_BOARD_LIST, boardService.findAll(limit))
+        );
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<CommonResponseDto> findByMemberId(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok().body(CommonResponseDto.of(
+                HttpStatus.OK, SUCCESS_GET_BOARD_LIST_USER, boardService.findByMemberId(userId))
+        );
+    }
 
 
     @PostMapping("/validtest")
