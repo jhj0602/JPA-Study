@@ -31,14 +31,13 @@ public class BoardService {
 
 
     public List<BoardResponseDto> findAll(int limit) {
-        Page<Board> boards = boardRepository.findAll(PageRequest.of(limit - 1, 3, Sort.by(Sort.Direction.DESC, "id")));
+        Page<Board> boards = boardRepository.findAll(
+                PageRequest.of(limit - 1, 4, Sort.by(Sort.Direction.DESC, "id")));
         return boards.stream().map(board -> {
             Integer totalComment = commentRepository.countByBoardId(board.getId());
             return new BoardResponseDto(board, totalComment);
         }).collect(Collectors.toList());
     }
-
-
     public BoardResponseDto findById(Long boardId) {
         List<Comment> findComments = commentRepository.findByJoinBoardId(boardId);
         List<CommentResponseDto> comments = findComments.stream()
@@ -54,5 +53,11 @@ public class BoardService {
             Integer totalComment = commentRepository.countByBoardId(board.getId());
             return new BoardResponseDto(board, totalComment);
         }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void addView(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(NotBoardException::new);
+        board.addView();
     }
 }
