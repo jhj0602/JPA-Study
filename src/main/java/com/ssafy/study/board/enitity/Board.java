@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -26,16 +24,23 @@ public class Board {
 
     private String content;
 
+    private Integer views;
+
     @ManyToOne(fetch = FetchType.LAZY)//fetch join N+1문제 해결 방법
     @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private Set<Comment>  comments = new LinkedHashSet<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Board(String content, Member member) {
         this.content = content;
+        this.views= 0;
         this.member = member;
+    }
+
+    public void addView() {
+        this.views ++;
     }
 }
