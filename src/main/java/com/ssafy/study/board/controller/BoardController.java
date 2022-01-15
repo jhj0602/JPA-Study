@@ -23,6 +23,7 @@ public class BoardController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponseDto> findById(@PathVariable("id") Long id) {
+        boardService.addView(id);
         return ResponseEntity.ok().body(CommonResponseDto.of(
                 HttpStatus.OK, SUCCESS_GET_BOARD, boardService.findById(id))
         );
@@ -35,7 +36,7 @@ public class BoardController {
         );
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<CommonResponseDto> findByMemberId(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok().body(CommonResponseDto.of(
                 HttpStatus.OK, SUCCESS_GET_BOARD_LIST_USER, boardService.findByMemberId(userId))
