@@ -17,6 +17,8 @@ public class BoardResponseDto {
 
     private String content;
 
+    private Integer views;
+
     private List<CommentResponseDto> comments;
 
     private Integer totalComment;
@@ -26,13 +28,15 @@ public class BoardResponseDto {
         this.id = board.getId();
         this.writer = board.getMember().getUserName();
         this.content = board.getContent();
+        this.views = board.getViews();
         this.comments = comments;
     }
 
     public BoardResponseDto(Board board, Integer totalComment) { // 전체조회
-      this.id = board.getId();
-      this.writer = board.getMember().getUserName();
-      this.content = board.getContent();
-      this.totalComment = totalComment;
+        this.id = board.getId();
+        this.writer = board.getMember().getUserName();
+        this.content = board.getContent();
+        this.views = board.getViews();
+        this.totalComment = totalComment;
     }
 }
