@@ -12,13 +12,13 @@ import java.util.Optional;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    //fetch join N+1문제 해결 방법
-    @EntityGraph(attributePaths = "member")
+    @Override
     List<Board> findAll();
 
+    @Override
     Optional<Board> findById(Long id);
 
-    @EntityGraph(attributePaths = "member")
+
     List<Board> findByMemberId(Long id);
 
 }
