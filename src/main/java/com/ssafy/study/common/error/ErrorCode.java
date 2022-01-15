@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor//모든 필드에 생성자를 생성하는거지
+@AllArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ErrorCode {
 
@@ -19,5 +19,4 @@ public enum ErrorCode {
 
     private final int status;
     private final String message;
-
 }
